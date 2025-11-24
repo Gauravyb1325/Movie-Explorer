@@ -7,6 +7,7 @@ import { useFavorites } from "./hooks/useFavorites.js";
 
 export default function App() {
   const [movies, setMovies] = useState([]);
+  const [favoriteMovies, setFavoriteMovies] = useState([]);
   const [query, setQuery] = useState("");
   const [selectedMovie, setSelectedMovie] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -15,6 +16,7 @@ export default function App() {
 
   const { favorites, toggleFavorite, isFavorite } = useFavorites();
 
+  // -------- Search Movies --------
   async function handleSearch(q) {
     setQuery(q);
     setLoading(true);
@@ -29,6 +31,7 @@ export default function App() {
     }
   }
 
+  // -------- Load Movie Details --------
   async function handleMovieClick(imdbID) {
     setLoadingDetail(true);
     setSelectedMovie(null);
@@ -45,6 +48,29 @@ export default function App() {
   function closeModal() {
     setSelectedMovie(null);
   }
+
+  // -------- Load Favorite Movies List --------
+  useEffect(() => {
+    async function loadFavorites() {
+      if (favorites.length === 0) {
+        setFavoriteMovies([]);
+        return;
+      }
+
+      const results = [];
+      for (const imdbID of favorites) {
+        try {
+          const movieData = await getMovieDetails(imdbID);
+          results.push(movieData);
+        } catch {
+          console.log("Error loading favorite:", imdbID);
+        }
+      }
+      setFavoriteMovies(results);
+    }
+
+    loadFavorites();
+  }, [favorites]);
 
   return (
     <div className="app">
@@ -64,33 +90,32 @@ export default function App() {
         {error && <p className="error">{error}</p>}
         {loading && <p className="loading">Loading movies...</p>}
 
-        {!loading && (
-          <>
+        {/* Search Results */}
+        {!loading && movies.length > 0 && (
+          <MovieGrid
+            movies={movies}
+            onMovieClick={handleMovieClick}
+            isFavorite={isFavorite}
+            toggleFavorite={toggleFavorite}
+          />
+        )}
+
+        {/* FAVORITES SECTION */}
+        {favoriteMovies.length > 0 && (
+          <section className="favorites-section">
+            <h2>⭐ Your Favorite Movies</h2>
+
             <MovieGrid
-              movies={movies}
+              movies={favoriteMovies}
               onMovieClick={handleMovieClick}
               isFavorite={isFavorite}
               toggleFavorite={toggleFavorite}
             />
-
-            {favorites.length > 0 && (
-              <section className="favorites-section">
-                <h2>Your Favorites</h2>
-                <div className="favorites-list">
-                  {movies
-                    .filter(m => favorites.includes(m.imdbID))
-                    .map(m => (
-                      <span key={m.imdbID}>{m.title}</span>
-                    ))}
-                </div>
-              </section>
-            )}
-          </>
+          </section>
         )}
       </main>
 
       {loadingDetail && <p className="loading">Loading details...</p>}
-
       <MovieDetailModal movie={selectedMovie} onClose={closeModal} />
     </div>
   );
