@@ -1,0 +1,59 @@
+# -------------------------
+# Node Modules & Build Files
+# -------------------------
+node_modules/
+dist/
+dist-ssr/
+build/
+*.tsbuildinfo
+
+# -------------------------
+# Logs
+# -------------------------
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# -------------------------
+# Environment Files (Security)
+# -------------------------
+.env
+.env.local
+.env.*.local
+
+# -------------------------
+# Cache Files
+# -------------------------
+.cache/
+.vite/
+*.cache
+coverage/
+
+# -------------------------
+# OS System Files
+# -------------------------
+.DS_Store
+Thumbs.db
+
+# -------------------------
+# IDE & Editor Settings
+# -------------------------
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# -------------------------
+# Optional: Generated files
+# -------------------------
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
